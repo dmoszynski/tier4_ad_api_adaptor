@@ -28,6 +28,8 @@ def _create_api_node(node_name, class_name, **kwargs):
 
 
 def generate_launch_description():
+    print("[DEBUG/Launch] Starting internal_api_adaptor launch file")
+    
     components = [
         _create_api_node("iv_msgs", "IVMsgs"),
         _create_api_node("operator", "Operator"),
@@ -41,4 +43,6 @@ def generate_launch_description():
         composable_node_descriptions=components,
         output="screen",
     )
+    
+    print("[DEBUG/Launch] Internal API container configured, launching...")
     return launch.LaunchDescription([container])

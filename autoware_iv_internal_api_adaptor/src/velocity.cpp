@@ -18,6 +18,10 @@ namespace internal_api
 {
 Velocity::Velocity(const rclcpp::NodeOptions & options) : Node("external_api_velocity", options)
 {
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Velocity"),
+    "Constructing internal Velocity API node with /api/autoware/set/velocity_limit service");
+    
   using std::placeholders::_1;
   using std::placeholders::_2;
   tier4_api_utils::ServiceProxyNodeInterface proxy(this);
@@ -26,6 +30,10 @@ Velocity::Velocity(const rclcpp::NodeOptions & options) : Node("external_api_vel
     "/api/autoware/set/pause_driving", std::bind(&Velocity::setPauseDriving, this, _1, _2));
   srv_velocity_ = proxy.create_service<tier4_external_api_msgs::srv::SetVelocityLimit>(
     "/api/autoware/set/velocity_limit", std::bind(&Velocity::setVelocityLimit, this, _1, _2));
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Velocity"),
+    "Created service /api/autoware/set/velocity_limit");
 
   pub_api_velocity_ = create_publisher<autoware_internal_planning_msgs::msg::VelocityLimit>(
     "/api/autoware/get/velocity_limit", rclcpp::QoS(1).transient_local());
@@ -37,6 +45,10 @@ Velocity::Velocity(const rclcpp::NodeOptions & options) : Node("external_api_vel
 
   is_ready_ = false;
   velocity_limit_ = 0.0;
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Velocity"),
+    "Internal Velocity API node construction completed, ready to handle requests");
 }
 
 void Velocity::setPauseDriving(
@@ -55,12 +67,23 @@ void Velocity::setVelocityLimit(
   const tier4_external_api_msgs::srv::SetVelocityLimit::Request::SharedPtr request,
   const tier4_external_api_msgs::srv::SetVelocityLimit::Response::SharedPtr response)
 {
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Velocity"),
+    "Received request to set velocity limit to %.2f m/s", request->velocity);
+    
   if (!is_ready_) {
+    RCLCPP_WARN(
+      rclcpp::get_logger("DEBUG/internal_api::Velocity"),
+      "Service not ready to set velocity limit");
     response->status = tier4_api_utils::response_error("It is not ready to set velocity.");
     return;
   }
   publishPlanningVelocity(request->velocity);
   response->status = tier4_api_utils::response_success();
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Velocity"),
+    "Sending response - success: true, velocity: %.2f m/s", request->velocity);
 }
 
 void Velocity::onVelocityLimit(

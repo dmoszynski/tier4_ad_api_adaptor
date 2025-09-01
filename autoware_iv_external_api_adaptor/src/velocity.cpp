@@ -19,6 +19,10 @@ namespace external_api
 
 Velocity::Velocity(const rclcpp::NodeOptions & options) : Node("external_api_velocity", options)
 {
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/external_api::Velocity"),
+    "Constructing Velocity API node with /api/external/set/velocity_limit service");
+    
   using std::placeholders::_1;
   using std::placeholders::_2;
   tier4_api_utils::ServiceProxyNodeInterface proxy(this);
@@ -32,8 +36,17 @@ Velocity::Velocity(const rclcpp::NodeOptions & options) : Node("external_api_vel
   srv_velocity_ = proxy.create_service<tier4_external_api_msgs::srv::SetVelocityLimit>(
     "/api/external/set/velocity_limit", std::bind(&Velocity::setVelocityLimit, this, _1, _2),
     rmw_qos_profile_services_default, group_);
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/external_api::Velocity"),
+    "DEBUG/external_api::Velocity: Created service /api/external/set/velocity_limit");
+    
   cli_velocity_ = proxy.create_client<tier4_external_api_msgs::srv::SetVelocityLimit>(
     "/api/autoware/set/velocity_limit", rmw_qos_profile_services_default);
+    
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/external_api::Velocity"),
+    "Velocity API node construction completed, ready to handle requests");
 }
 
 void Velocity::setPauseDriving(
@@ -52,11 +65,24 @@ void Velocity::setVelocityLimit(
   const tier4_external_api_msgs::srv::SetVelocityLimit::Request::SharedPtr request,
   const tier4_external_api_msgs::srv::SetVelocityLimit::Response::SharedPtr response)
 {
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/external_api::Velocity"),
+    "Received request to set velocity limit to %.2f m/s", request->velocity);
+    
   auto [status, resp] = cli_velocity_->call(request);
   if (!tier4_api_utils::is_success(status)) {
+    RCLCPP_WARN(
+      rclcpp::get_logger("DEBUG/external_api::Velocity"),
+      "Failed to call Autoware velocity service");
     response->status = status;
     return;
   }
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/external_api::Velocity"),
+    "Sending response - success: %s, velocity: %.2f m/s", 
+    tier4_api_utils::is_success(resp->status) ? "true" : "false", request->velocity);
+    
   response->status = resp->status;
 }
 
