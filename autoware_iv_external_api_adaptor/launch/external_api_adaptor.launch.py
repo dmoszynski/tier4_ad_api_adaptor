@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import launch
+import time
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 
@@ -28,7 +29,7 @@ def _create_api_node(node_name, class_name, **kwargs):
 
 
 def generate_launch_description():
-    print("[DEBUG/Launch] Starting external_api_adaptor launch file")
+    print(f"[DEBUG/Launch][{time.time()}] Starting external_api_adaptor launch file")
     
     # RTCController is launched by tier4_autoware_api_launch because it is used by autoware_universe.
     components = [
@@ -61,5 +62,5 @@ def generate_launch_description():
         output="screen",
     )
     
-    print("[DEBUG/Launch] External API container configured, launching...")
+    print(f"[DEBUG/Launch][{time.time()}] External API container configured, launching...")
     return launch.LaunchDescription([container])

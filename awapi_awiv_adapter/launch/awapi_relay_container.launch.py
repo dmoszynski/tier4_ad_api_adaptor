@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import launch
+import time
 from launch.actions import SetLaunchConfiguration
 from launch.conditions import IfCondition
 from launch.conditions import UnlessCondition
@@ -22,6 +23,8 @@ from launch_ros.descriptions import ComposableNode
 
 
 def generate_launch_description():
+    print(f"[DEBUG/Launch][{time.time()}] Starting awapi_relay_container launch file")
+    
     relay_components = []
 
     relay_components.append(
@@ -397,6 +400,7 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("use_multithread")),
     )
 
+    print(f"[DEBUG/Launch][{time.time()}] AWAPI relay container configured, launching...")
     return launch.LaunchDescription(
         [set_container_executable, set_container_mt_executable] + [container]
     )

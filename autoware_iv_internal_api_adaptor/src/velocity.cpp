@@ -14,6 +14,8 @@
 
 #include "velocity.hpp"
 
+#include <chrono>
+
 namespace internal_api
 {
 Velocity::Velocity(const rclcpp::NodeOptions & options) : Node("external_api_velocity", options)

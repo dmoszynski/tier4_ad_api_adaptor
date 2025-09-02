@@ -15,11 +15,16 @@
 #include "iv_msgs.hpp"
 
 #include <tier4_auto_msgs_converter/tier4_auto_msgs_converter.hpp>
+#include <chrono>
 
 namespace internal_api
 {
 IVMsgs::IVMsgs(const rclcpp::NodeOptions & options) : Node("external_api_iv_msgs", options)
 {
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::IVMsgs"),
+    "Constructing internal IVMsgs API node");
+    
   using std::placeholders::_1;
 
   pub_state_ = create_publisher<AutowareStateOutput>("/api/iv_msgs/autoware/state", rclcpp::QoS(1));
@@ -40,6 +45,10 @@ IVMsgs::IVMsgs(const rclcpp::NodeOptions & options) : Node("external_api_iv_msgs
     std::bind(&IVMsgs::onTrackedObjects, this, _1));
 
   is_emergency_ = false;
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::IVMsgs"),
+    "IVMsgs constructor completed");
 }
 
 void IVMsgs::onState(const AutowareStateInput::ConstSharedPtr message)

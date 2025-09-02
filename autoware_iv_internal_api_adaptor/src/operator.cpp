@@ -15,11 +15,16 @@
 #include "operator.hpp"
 
 #include <memory>
+#include <chrono>
 
 namespace internal_api
 {
 Operator::Operator(const rclcpp::NodeOptions & options) : Node("external_api_operator", options)
 {
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Operator"),
+    "Constructing internal Operator API node");
+    
   using namespace std::literals::chrono_literals;
   using std::placeholders::_1;
   using std::placeholders::_2;
@@ -59,6 +64,10 @@ Operator::Operator(const rclcpp::NodeOptions & options) : Node("external_api_ope
     "/api/autoware/get/emergency", 10, std::bind(&Operator::onEmergencyStatus, this, _1));
 
   timer_ = rclcpp::create_timer(this, get_clock(), 200ms, std::bind(&Operator::onTimer, this));
+  
+  RCLCPP_WARN(
+    rclcpp::get_logger("DEBUG/internal_api::Operator"),
+    "Operator constructor completed");
 }
 
 void Operator::setOperator(
